@@ -29,7 +29,7 @@ streetVision is an interactive web application that allows users to draw areas o
    ```bash
    cd streetVision
    ```
-3. Open the `index.html` file in your browser.
+3. Open the `index.html` file in your browser using a local server.
 
 ## Contributing
 
