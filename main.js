@@ -154,10 +154,6 @@ async function fetchRoads(bounds) {
 }
 
 function setupEventListeners() {
-    document.getElementById('startDrawing').addEventListener('click', () => {
-        new L.Draw.Rectangle(map, drawControl.options.draw.rectangle).enable();
-    });
-
     document.getElementById('clearMap').addEventListener('click', () => {
         drawnItems.clearLayers();
         points.forEach(point => map.removeLayer(point));
@@ -178,13 +174,25 @@ function setupEventListeners() {
         };
 
         const dataStr = JSON.stringify(geojson);
-        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+        const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
         const exportFileDefaultName = 'points.geojson';
 
         const linkElement = document.createElement('a');
         linkElement.setAttribute('href', dataUri);
         linkElement.setAttribute('download', exportFileDefaultName);
         linkElement.click();
+    });
+
+    document.getElementById('citySearch').addEventListener('change', async (event) => {
+        const city = event.target.value;
+        const response = await fetch(`https://nominatim.openstreetmap.org/search?city=${city}&format=json`);
+        const data = await response.json();
+        if (data.length > 0) {
+            const { lat, lon } = data[0];
+            map.setView([lat, lon], 13);
+        } else {
+            alert('Città non trovata');
+        }
     });
 } 
 
