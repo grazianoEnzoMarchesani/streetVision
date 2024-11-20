@@ -203,7 +203,7 @@ function setupEventListeners() {
             const { lat, lon } = data[0];
             map.setView([lat, lon], 13);
         } else {
-            alert('Città non trovata');
+            alert('City not found');
         }
     });
 
@@ -232,8 +232,8 @@ function showEditControls() {
     const editControls = document.createElement('div');
     editControls.id = 'editControls';
     editControls.innerHTML = `
-        <button id="saveEdit" class="edit-btn">Salva Modifiche</button>
-        <button id="cancelEdit" class="edit-btn">Annulla</button>
+        <button id="saveEdit" class="edit-btn">Save Changes</button>
+        <button id="cancelEdit" class="edit-btn">Cancel</button>
     `;
     document.querySelector('.controls').appendChild(editControls);
 
