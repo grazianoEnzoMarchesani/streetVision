@@ -194,8 +194,34 @@ function setupEventListeners() {
             alert('Città non trovata');
         }
     });
-} 
+}
+
+function setupCustomControls() {
+    const controlsContainer = document.querySelector('.controls');
+
+    // Crea un nuovo pulsante per il controllo di zoom in
+    const zoomInButton = document.createElement('button');
+    zoomInButton.textContent = '+';
+    zoomInButton.onclick = () => map.zoomIn();
+    controlsContainer.appendChild(zoomInButton);
+
+    // Crea un nuovo pulsante per il controllo di zoom out
+    const zoomOutButton = document.createElement('button');
+    zoomOutButton.textContent = '-';
+    zoomOutButton.onclick = () => map.zoomOut();
+    controlsContainer.appendChild(zoomOutButton);
+
+    // Crea un nuovo pulsante per il controllo di disegno
+    const drawButton = document.createElement('button');
+    drawButton.textContent = 'Disegna';
+    drawButton.onclick = () => {
+        // Attiva il controllo di disegno
+        new L.Draw.Rectangle(map, drawControl.options.draw.rectangle).enable();
+    };
+    controlsContainer.appendChild(drawButton);
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     initMap();
+    setupCustomControls();
 }); 

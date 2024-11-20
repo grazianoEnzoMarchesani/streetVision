@@ -64,4 +64,8 @@
         left: 20px;
         right: 20px;
     }
+}
+
+.leaflet-control-container {
+    display: none;
 } 
