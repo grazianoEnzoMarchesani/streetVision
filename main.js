@@ -1,6 +1,13 @@
 let map, drawControl, drawnItems;
 let points = [];
 let editHandler = null; // Variabile globale per gestire l'handler di modifica
+let streetViewParams = {
+  size: '2000x2000',
+  fov: 90,
+  heading: 180,
+  pitch: 0,
+  apiKey: ''
+};
 
 function initMap() {
     // Inizializza la mappa
@@ -104,6 +111,8 @@ async function generatePointsOnRoads(rectangle) {
             marker.addTo(map);
         }
     });
+
+    updatePointsList();
 }
 
 async function fetchRoads(bounds) {
@@ -219,6 +228,26 @@ function setupEventListeners() {
             showEditControls();
         }
     });
+
+    ['fov', 'heading', 'pitch'].forEach(param => {
+        const input = document.getElementById(param);
+        const valueSpan = document.getElementById(`${param}Value`);
+        input.addEventListener('input', (e) => {
+            streetViewParams[param] = parseInt(e.target.value);
+            valueSpan.textContent = e.target.value;
+            updatePointsList();
+        });
+    });
+    
+    document.getElementById('imageSize').addEventListener('change', (e) => {
+        streetViewParams.size = e.target.value;
+        updatePointsList();
+    });
+    
+    document.getElementById('apiKey').addEventListener('change', (e) => {
+        streetViewParams.apiKey = e.target.value;
+        updatePointsList();
+    });
 }
 
 function showEditControls() {
@@ -278,6 +307,60 @@ function setupCustomControls() {
     // Button for zoom out control
     const zoomOutButton = document.querySelector('#zoomOut');
     zoomOutButton.onclick = () => map.zoomOut();
+}
+
+function updatePointsList() {
+    const pointsList = document.getElementById('points-list');
+    pointsList.innerHTML = '<h4>Punti Estratti:</h4>';
+    
+    points.forEach((point, index) => {
+        const lat = point.getLatLng().lat;
+        const lng = point.getLatLng().lng;
+        const link = generateStreetViewLink(lat, lng);
+        
+        const pointElement = document.createElement('div');
+        pointElement.className = 'point-item';
+        pointElement.innerHTML = `
+            <div>Punto ${index + 1}: ${lat.toFixed(6)}, ${lng.toFixed(6)}</div>
+            <div class="point-actions">
+                <button onclick="previewStreetView('${link}')">Anteprima</button>
+                <button onclick="copyToClipboard('${link}')">Copia Link</button>
+            </div>
+        `;
+        pointsList.appendChild(pointElement);
+    });
+}
+
+function generateStreetViewLink(lat, lng) {
+    const params = new URLSearchParams({
+        size: streetViewParams.size,
+        location: `${lat},${lng}`,
+        fov: streetViewParams.fov,
+        heading: streetViewParams.heading,
+        pitch: streetViewParams.pitch,
+        key: streetViewParams.apiKey
+    });
+    
+    return `https://maps.googleapis.com/maps/api/streetview?${params.toString()}`;
+}
+
+function previewStreetView(link) {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <img src="${link}" alt="Street View">
+            <button onclick="this.parentElement.parentElement.remove()">Chiudi</button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    modal.style.display = 'block';
+}
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text)
+        .then(() => alert('Link copiato negli appunti!'))
+        .catch(err => console.error('Errore nella copia:', err));
 }
 
 document.addEventListener('DOMContentLoaded', () => {

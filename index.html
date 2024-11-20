@@ -29,6 +29,41 @@
             <button id="downloadGeoJSON">Download GeoJSON</button>
             <button id="editArea">Edit Area</button>
         </div>
+        <div class="streetview-controls">
+            <h3>Impostazioni Street View</h3>
+            <div class="params">
+                <label>
+                    API Key Google Maps:
+                    <input type="text" id="apiKey" placeholder="Inserisci la tua API key">
+                </label>
+                <label>
+                    Dimensioni immagine:
+                    <select id="imageSize">
+                        <option value="400x400">400x400</option>
+                        <option value="800x800">800x800</option>
+                        <option value="2000x2000" selected>2000x2000</option>
+                    </select>
+                </label>
+                <label>
+                    FOV (0-120):
+                    <input type="range" id="fov" min="0" max="120" value="90">
+                    <span id="fovValue">90</span>
+                </label>
+                <label>
+                    Heading (0-360):
+                    <input type="range" id="heading" min="0" max="360" value="180">
+                    <span id="headingValue">180</span>
+                </label>
+                <label>
+                    Pitch (-90/90):
+                    <input type="range" id="pitch" min="-90" max="90" value="0">
+                    <span id="pitchValue">0</span>
+                </label>
+            </div>
+            <div id="points-list">
+                <!-- I punti verranno inseriti qui dinamicamente -->
+            </div>
+        </div>
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
