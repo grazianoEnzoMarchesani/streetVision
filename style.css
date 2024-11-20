@@ -71,4 +71,38 @@
 
 .leaflet-control-container {
     display: none !important;
+}
+
+.leaflet-editing-icon {
+    border-radius: 50%;
+    background-color: white;
+    border: 2px solid #2b6cb0;
+}
+
+#editControls {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+.edit-btn {
+    flex: 1;
+    padding: 8px;
+    background: #2b6cb0;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.edit-btn:hover {
+    background: #2c5282;
+}
+
+#cancelEdit {
+    background: #e53e3e;
+}
+
+#cancelEdit:hover {
+    background: #c53030;
 } 

@@ -1,5 +1,6 @@
 let map, drawControl, drawnItems;
 let points = [];
+let editHandler = null; // Variabile globale per gestire l'handler di modifica
 
 function initMap() {
     // Inizializza la mappa
@@ -30,10 +31,20 @@ function initMap() {
             }
         },
         edit: {
-            featureGroup: drawnItems
+            featureGroup: drawnItems,
+            edit: true,
+            remove: false
         }
     });
     map.addControl(drawControl);
+
+    // Aggiungi handler per l'evento di modifica completata
+    map.on('draw:edited', function (e) {
+        const layers = e.layers;
+        layers.eachLayer(function (layer) {
+            generatePointsOnRoads(layer);
+        });
+    });
 
     // Gestisci gli eventi di disegno
     map.on(L.Draw.Event.CREATED, handleDrawCreated);
@@ -193,6 +204,60 @@ function setupEventListeners() {
             map.setView([lat, lon], 13);
         } else {
             alert('Città non trovata');
+        }
+    });
+
+    document.getElementById('editArea').addEventListener('click', function() {
+        if (!editHandler) {
+            // Attiva la modalità di modifica
+            editHandler = new L.EditToolbar.Edit(map, {
+                featureGroup: drawnItems
+            });
+            editHandler.enable();
+            
+            // Mostra i pulsanti di conferma/annulla
+            showEditControls();
+        }
+    });
+}
+
+function showEditControls() {
+    // Rimuovi i controlli esistenti se presenti
+    const existingControls = document.getElementById('editControls');
+    if (existingControls) {
+        existingControls.remove();
+    }
+
+    // Crea i nuovi controlli
+    const editControls = document.createElement('div');
+    editControls.id = 'editControls';
+    editControls.innerHTML = `
+        <button id="saveEdit" class="edit-btn">Salva Modifiche</button>
+        <button id="cancelEdit" class="edit-btn">Annulla</button>
+    `;
+    document.querySelector('.controls').appendChild(editControls);
+
+    // Aggiungi gli event listener
+    document.getElementById('saveEdit').addEventListener('click', function() {
+        if (editHandler) {
+            editHandler.save();
+            editHandler.disable();
+            editHandler = null;
+            editControls.remove();
+            
+            // Rigenera i punti dopo la modifica
+            drawnItems.eachLayer(function(layer) {
+                generatePointsOnRoads(layer);
+            });
+        }
+    });
+
+    document.getElementById('cancelEdit').addEventListener('click', function() {
+        if (editHandler) {
+            editHandler.revertLayers();
+            editHandler.disable();
+            editHandler = null;
+            editControls.remove();
         }
     });
 }
