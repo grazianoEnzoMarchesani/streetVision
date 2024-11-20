@@ -289,7 +289,7 @@ function showEditControls() {
             editControls.remove();
         }
     });
-}
+} 
 
 function setupCustomControls() {
     const controlsContainer = document.querySelector('.controls');
