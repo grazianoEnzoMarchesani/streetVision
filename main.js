@@ -41,6 +41,7 @@ function initMap() {
 }
 
 function handleDrawCreated(e) {
+    drawnItems.clearLayers();
     const layer = e.layer;
     drawnItems.addLayer(layer);
     generatePointsOnRoads(layer);
