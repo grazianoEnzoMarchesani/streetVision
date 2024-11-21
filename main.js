@@ -311,32 +311,44 @@ function setupCustomControls() {
 
 function updatePointsList() {
     const pointsList = document.getElementById('points-list');
-    pointsList.innerHTML = '<h4>Extracted Points:</h4>';
+    pointsList.innerHTML = '<h4>Punti Estratti:</h4>';
+    
+    const fov = streetViewParams.fov;
+    const numImages = Math.ceil(360 / fov);
     
     points.forEach((point, index) => {
         const lat = point.getLatLng().lat;
         const lng = point.getLatLng().lng;
-        const link = generateStreetViewLink(lat, lng);
-        
         const pointElement = document.createElement('div');
         pointElement.className = 'point-item';
+        
+        let linksHtml = '';
+        for (let i = 0; i < numImages; i++) {
+            const heading = (360 / numImages) * i;
+            const link = generateStreetViewLink(lat, lng, heading);
+            linksHtml += `
+                <button onclick="window.open('${link}', '_blank')">
+                    Vista ${i + 1} (${heading}°)
+                </button>
+            `;
+        }
+        
         pointElement.innerHTML = `
-            <div>Point ${index + 1}: ${lat.toFixed(6)}, ${lng.toFixed(6)}</div>
+            <div>Punto ${index + 1}: ${lat.toFixed(6)}, ${lng.toFixed(6)}</div>
             <div class="point-actions">
-                <button onclick="previewStreetView('${link}')">Preview</button>
-                <button onclick="copyToClipboard('${link}')">Copy Link</button>
+                ${linksHtml}
             </div>
         `;
         pointsList.appendChild(pointElement);
     });
 }
 
-function generateStreetViewLink(lat, lng) {
+function generateStreetViewLink(lat, lng, heading) {
     const params = new URLSearchParams({
         size: streetViewParams.size,
         location: `${lat},${lng}`,
         fov: streetViewParams.fov,
-        heading: streetViewParams.heading,
+        heading: heading,
         pitch: streetViewParams.pitch,
         key: streetViewParams.apiKey
     });
