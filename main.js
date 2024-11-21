@@ -311,7 +311,7 @@ function setupCustomControls() {
 
 function updatePointsList() {
     const pointsList = document.getElementById('points-list');
-    pointsList.innerHTML = '<h4>Punti Estratti:</h4>';
+    pointsList.innerHTML = '<h4>Extracted Points:</h4>';
     
     points.forEach((point, index) => {
         const lat = point.getLatLng().lat;
@@ -321,10 +321,10 @@ function updatePointsList() {
         const pointElement = document.createElement('div');
         pointElement.className = 'point-item';
         pointElement.innerHTML = `
-            <div>Punto ${index + 1}: ${lat.toFixed(6)}, ${lng.toFixed(6)}</div>
+            <div>Point ${index + 1}: ${lat.toFixed(6)}, ${lng.toFixed(6)}</div>
             <div class="point-actions">
-                <button onclick="previewStreetView('${link}')">Anteprima</button>
-                <button onclick="copyToClipboard('${link}')">Copia Link</button>
+                <button onclick="previewStreetView('${link}')">Preview</button>
+                <button onclick="copyToClipboard('${link}')">Copy Link</button>
             </div>
         `;
         pointsList.appendChild(pointElement);
@@ -350,7 +350,7 @@ function previewStreetView(link) {
     modal.innerHTML = `
         <div class="modal-content">
             <img src="${link}" alt="Street View">
-            <button onclick="this.parentElement.parentElement.remove()">Chiudi</button>
+            <button onclick="this.parentElement.parentElement.remove()">Close</button>
         </div>
     `;
     document.body.appendChild(modal);
@@ -359,8 +359,8 @@ function previewStreetView(link) {
 
 function copyToClipboard(text) {
     navigator.clipboard.writeText(text)
-        .then(() => alert('Link copiato negli appunti!'))
-        .catch(err => console.error('Errore nella copia:', err));
+        .then(() => alert('Link copied to clipboard!'))
+        .catch(err => console.error('Error copying:', err));
 }
 
 document.addEventListener('DOMContentLoaded', () => {
