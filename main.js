@@ -107,6 +107,14 @@ async function generatePointsOnRoads(rectangle) {
                     fillOpacity: 0.8
                 }
             );
+
+            // Aggiungiamo un tooltip permanente con il numero del punto
+            marker.bindTooltip(`${points.length + 1}`, {
+                permanent: true,
+                direction: 'center',
+                className: 'point-label'
+            });
+
             points.push(marker);
             marker.addTo(map);
         }
