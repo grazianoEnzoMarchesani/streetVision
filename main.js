@@ -367,3 +367,18 @@ document.addEventListener('DOMContentLoaded', () => {
     initMap();
     setupCustomControls();
 }); 
+
+function updateNumImages() {
+    const fov = parseInt(document.getElementById('fov').value);
+    const numImages = Math.ceil(360 / fov);
+    document.getElementById('numImages').textContent = numImages;
+}
+
+document.getElementById('fov').addEventListener('change', (e) => {
+    streetViewParams.fov = parseInt(e.target.value);
+    document.getElementById('fovValue').textContent = e.target.value;
+    updateNumImages();
+    updatePointsList();
+});
+
+updateNumImages(); 

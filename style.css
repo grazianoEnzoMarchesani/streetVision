@@ -153,4 +153,10 @@
     background: white;
     padding: 20px;
     border-radius: 8px;
+}
+
+#numImages {
+    font-weight: bold;
+    color: #2b6cb0;
+    margin-left: 5px;
 } 
