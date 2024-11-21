@@ -108,12 +108,31 @@ async function generatePointsOnRoads(rectangle) {
                 }
             );
 
-            // Aggiungiamo un tooltip permanente con il numero del punto
+            // Aggiungiamo il tooltip ma lo nascondiamo inizialmente
             marker.bindTooltip(`${points.length + 1}`, {
                 permanent: true,
                 direction: 'center',
-                className: 'point-label'
+                className: 'point-label hidden'
             });
+
+            // Gestiamo la visibilità del tooltip in base al livello di zoom
+            const updateTooltipVisibility = () => {
+                const zoom = map.getZoom();
+                const tooltip = marker.getTooltip();
+                if (tooltip && tooltip._container) {  // Verifichiamo che il tooltip e il suo container esistano
+                    if (zoom >= 16) {
+                        tooltip._container.classList.remove('hidden');
+                    } else {
+                        tooltip._container.classList.add('hidden');
+                    }
+                }
+            };
+
+            // Aggiungiamo l'evento zoomend alla mappa
+            map.on('zoomend', updateTooltipVisibility);
+
+            // Chiamiamo la funzione inizialmente dopo un breve delay per assicurarci che il tooltip sia stato creato
+            setTimeout(updateTooltipVisibility, 100);
 
             points.push(marker);
             marker.addTo(map);

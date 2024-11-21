@@ -239,4 +239,8 @@
 .leaflet-tooltip-pane {
     z-index: 600;
 }
+
+.point-label.hidden {
+    display: none;
+}
  
