@@ -229,7 +229,7 @@ function setupEventListeners() {
         }
     });
 
-    ['fov', 'heading', 'pitch'].forEach(param => {
+    ['fov', 'pitch'].forEach(param => {
         const input = document.getElementById(param);
         const valueSpan = document.getElementById(`${param}Value`);
         input.addEventListener('input', (e) => {
