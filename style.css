@@ -243,4 +243,9 @@
 .point-label.hidden {
     display: none;
 }
+
+.grayscale-tiles {
+    filter: grayscale(100%) !important;
+    -webkit-filter: grayscale(100%) !important;
+}
  

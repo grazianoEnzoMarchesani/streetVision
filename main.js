@@ -13,9 +13,10 @@ function initMap() {
     // Inizializza la mappa con le coordinate di Ascoli Piceno
     map = L.map('map').setView([42.8537, 13.5749], 13);
     
-    // Aggiungi layer OpenStreetMap
+    // Aggiungi layer OpenStreetMap in bianco e nero
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
+        attribution: '© OpenStreetMap contributors',
+        className: 'grayscale-tiles'
     }).addTo(map);
 
     // Inizializza il layer per gli elementi disegnati
