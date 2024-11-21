@@ -313,6 +313,14 @@ function updatePointsList() {
     const pointsList = document.getElementById('points-list');
     pointsList.innerHTML = '<h4>Punti Estratti:</h4>';
     
+    if (points.length > 0) {
+        const downloadAllBtn = document.createElement('button');
+        downloadAllBtn.className = 'download-all-btn';
+        downloadAllBtn.innerHTML = 'Scarica tutte le immagini';
+        downloadAllBtn.onclick = downloadAllImages;
+        pointsList.appendChild(downloadAllBtn);
+    }
+    
     const fov = streetViewParams.fov;
     const numImages = Math.ceil(360 / fov);
     
@@ -394,3 +402,62 @@ document.getElementById('fov').addEventListener('change', (e) => {
 });
 
 updateNumImages(); 
+
+async function downloadAllImages() {
+    const fov = streetViewParams.fov;
+    const numImages = Math.ceil(360 / fov);
+    const totalImages = points.length * numImages;
+    
+    if (!confirm(`Stai per scaricare ${totalImages} immagini. Vuoi continuare?`)) {
+        return;
+    }
+
+    const downloadStatus = document.createElement('div');
+    downloadStatus.className = 'download-status';
+    downloadStatus.innerHTML = 'Preparazione download...';
+    document.body.appendChild(downloadStatus);
+
+    let completed = 0;
+
+    try {
+        for (let i = 0; i < points.length; i++) {
+            const point = points[i];
+            const lat = point.getLatLng().lat;
+            const lng = point.getLatLng().lng;
+            
+            for (let j = 0; j < numImages; j++) {
+                const heading = (360 / numImages) * j;
+                const link = generateStreetViewLink(lat, lng, heading);
+                
+                try {
+                    const response = await fetch(link);
+                    const blob = await response.blob();
+                    const fileName = `streetview_${lat.toFixed(6)}_${lng.toFixed(6)}_${heading}.jpg`;
+                    
+                    // Crea un link per il download
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = URL.createObjectURL(blob);
+                    downloadLink.download = fileName;
+                    downloadLink.click();
+                    URL.revokeObjectURL(downloadLink.href);
+                    
+                    completed++;
+                    downloadStatus.innerHTML = `Download in corso: ${completed}/${totalImages} immagini`;
+                    
+                    // Piccola pausa per evitare di sovraccaricare il browser
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    
+                } catch (error) {
+                    console.error(`Errore nel download dell'immagine: ${error}`);
+                }
+            }
+        }
+        
+        downloadStatus.innerHTML = 'Download completato!';
+        setTimeout(() => downloadStatus.remove(), 3000);
+        
+    } catch (error) {
+        downloadStatus.innerHTML = `Errore durante il download: ${error}`;
+        setTimeout(() => downloadStatus.remove(), 5000);
+    }
+} 
