@@ -339,7 +339,7 @@ function setupCustomControls() {
 
 function updatePointsList() {
     const pointsList = document.getElementById('points-list');
-    pointsList.innerHTML = '<h4>Punti Estratti:</h4>';
+    pointsList.innerHTML = '<h4>Extracted Points:</h4>';
     
     if (points.length > 0) {
         const downloadButtons = document.createElement('div');
@@ -347,12 +347,12 @@ function updatePointsList() {
         
         const downloadAllBtn = document.createElement('button');
         downloadAllBtn.className = 'download-all-btn';
-        downloadAllBtn.innerHTML = 'Scarica tutte le immagini';
+        downloadAllBtn.innerHTML = 'Save all images';
         downloadAllBtn.onclick = downloadAllImages;
         
         const downloadZipBtn = document.createElement('button');
         downloadZipBtn.className = 'download-zip-btn';
-        downloadZipBtn.innerHTML = 'Scarica ZIP con tutte le immagini';
+        downloadZipBtn.innerHTML = 'Save images as ZIP';
         downloadZipBtn.onclick = downloadAllImagesAsZip;
         
         downloadButtons.appendChild(downloadAllBtn);
@@ -375,13 +375,13 @@ function updatePointsList() {
             const link = generateStreetViewLink(lat, lng, heading);
             linksHtml += `
                 <button onclick="window.open('${link}', '_blank')">
-                    Vista ${i + 1} (${heading}°)
+                    View ${i + 1} (${heading}°)
                 </button>
             `;
         }
         
         pointElement.innerHTML = `
-            <div>Punto ${index + 1}: ${lat.toFixed(6)}, ${lng.toFixed(6)}</div>
+            <div>Point ${index + 1}: ${lat.toFixed(6)}, ${lng.toFixed(6)}</div>
             <div class="point-actions">
                 ${linksHtml}
             </div>
@@ -525,7 +525,7 @@ async function downloadAllImagesAsZip() {
             const lng = point.getLatLng().lng;
             
             // Crea una cartella per ogni punto
-            const pointFolder = zip.folder(`punto_${i + 1}_${lat.toFixed(6)}_${lng.toFixed(6)}`);
+            const pointFolder = zip.folder(`point_${i + 1}_${lat.toFixed(6)}_${lng.toFixed(6)}`);
             
             for (let j = 0; j < numImages; j++) {
                 const heading = (360 / numImages) * j;
@@ -534,12 +534,12 @@ async function downloadAllImagesAsZip() {
                 try {
                     const response = await fetch(link);
                     const blob = await response.blob();
-                    const fileName = `streetview_point${i+1}_vista_${heading.toFixed(0)}.jpg`;
+                    const fileName = `streetview_point${i+1}_view_${heading.toFixed(0)}.jpg`;
                     
                     pointFolder.file(fileName, blob);
                     
                     completed++;
-                    downloadStatus.innerHTML = `Preparazione ZIP: ${completed}/${totalImages} immagini`;
+                    downloadStatus.innerHTML = `Preparing ZIP: ${completed}/${totalImages} images`;
                     
                     // Piccola pausa per evitare di sovraccaricare il browser
                     await new Promise(resolve => setTimeout(resolve, 200));
