@@ -471,7 +471,7 @@ async function downloadAllImages() {
                 try {
                     const response = await fetch(link);
                     const blob = await response.blob();
-                    const fileName = `streetview_${lat.toFixed(6)}_${lng.toFixed(6)}_${heading}.jpg`;
+                    const fileName = `streetview_point${i+1}_${lat.toFixed(6)}_${lng.toFixed(6)}_${heading}.jpg`;
                     
                     // Crea un link per il download
                     const downloadLink = document.createElement('a');
@@ -534,7 +534,7 @@ async function downloadAllImagesAsZip() {
                 try {
                     const response = await fetch(link);
                     const blob = await response.blob();
-                    const fileName = `vista_${heading.toFixed(0)}.jpg`;
+                    const fileName = `streetview_point${i+1}_vista_${heading.toFixed(0)}.jpg`;
                     
                     pointFolder.file(fileName, blob);
                     
