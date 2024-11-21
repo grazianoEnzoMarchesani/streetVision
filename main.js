@@ -314,11 +314,22 @@ function updatePointsList() {
     pointsList.innerHTML = '<h4>Punti Estratti:</h4>';
     
     if (points.length > 0) {
+        const downloadButtons = document.createElement('div');
+        downloadButtons.className = 'download-buttons';
+        
         const downloadAllBtn = document.createElement('button');
         downloadAllBtn.className = 'download-all-btn';
         downloadAllBtn.innerHTML = 'Scarica tutte le immagini';
         downloadAllBtn.onclick = downloadAllImages;
-        pointsList.appendChild(downloadAllBtn);
+        
+        const downloadZipBtn = document.createElement('button');
+        downloadZipBtn.className = 'download-zip-btn';
+        downloadZipBtn.innerHTML = 'Scarica ZIP con tutte le immagini';
+        downloadZipBtn.onclick = downloadAllImagesAsZip;
+        
+        downloadButtons.appendChild(downloadAllBtn);
+        downloadButtons.appendChild(downloadZipBtn);
+        pointsList.appendChild(downloadButtons);
     }
     
     const fov = streetViewParams.fov;
@@ -458,6 +469,85 @@ async function downloadAllImages() {
         
     } catch (error) {
         downloadStatus.innerHTML = `Errore durante il download: ${error}`;
+        setTimeout(() => downloadStatus.remove(), 5000);
+    }
+} 
+
+async function downloadAllImagesAsZip() {
+    const fov = streetViewParams.fov;
+    const numImages = Math.ceil(360 / fov);
+    const totalImages = points.length * numImages;
+    
+    if (!confirm(`Stai per scaricare ${totalImages} immagini in formato ZIP. Vuoi continuare?`)) {
+        return;
+    }
+
+    const downloadStatus = document.createElement('div');
+    downloadStatus.className = 'download-status';
+    downloadStatus.innerHTML = 'Preparazione ZIP...';
+    document.body.appendChild(downloadStatus);
+
+    let completed = 0;
+    const zip = new JSZip();
+
+    try {
+        for (let i = 0; i < points.length; i++) {
+            const point = points[i];
+            const lat = point.getLatLng().lat;
+            const lng = point.getLatLng().lng;
+            
+            // Crea una cartella per ogni punto
+            const pointFolder = zip.folder(`punto_${i + 1}_${lat.toFixed(6)}_${lng.toFixed(6)}`);
+            
+            for (let j = 0; j < numImages; j++) {
+                const heading = (360 / numImages) * j;
+                const link = generateStreetViewLink(lat, lng, heading);
+                
+                try {
+                    const response = await fetch(link);
+                    const blob = await response.blob();
+                    const fileName = `vista_${heading.toFixed(0)}.jpg`;
+                    
+                    pointFolder.file(fileName, blob);
+                    
+                    completed++;
+                    downloadStatus.innerHTML = `Preparazione ZIP: ${completed}/${totalImages} immagini`;
+                    
+                    // Piccola pausa per evitare di sovraccaricare il browser
+                    await new Promise(resolve => setTimeout(resolve, 200));
+                    
+                } catch (error) {
+                    console.error(`Errore nel download dell'immagine: ${error}`);
+                }
+            }
+        }
+        
+        downloadStatus.innerHTML = 'Creazione ZIP in corso...';
+        
+        // Genera il file ZIP
+        const zipBlob = await zip.generateAsync({
+            type: "blob",
+            compression: "DEFLATE",
+            compressionOptions: {
+                level: 5
+            }
+        });
+        
+        // Crea un timestamp per il nome del file
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        
+        // Download del file ZIP
+        const downloadLink = document.createElement('a');
+        downloadLink.href = URL.createObjectURL(zipBlob);
+        downloadLink.download = `streetview_images_${timestamp}.zip`;
+        downloadLink.click();
+        URL.revokeObjectURL(downloadLink.href);
+        
+        downloadStatus.innerHTML = 'Download ZIP completato!';
+        setTimeout(() => downloadStatus.remove(), 3000);
+        
+    } catch (error) {
+        downloadStatus.innerHTML = `Errore durante la creazione dello ZIP: ${error}`;
         setTimeout(() => downloadStatus.remove(), 5000);
     }
 } 
